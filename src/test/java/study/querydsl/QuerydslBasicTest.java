@@ -11,6 +11,8 @@ import study.querydsl.entity.Member;
 import study.querydsl.entity.QMember;
 import study.querydsl.entity.Team;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static study.querydsl.entity.QMember.member;
 
@@ -96,5 +98,21 @@ class QuerydslBasicTest {
 
         assertThat(result.getUsername()).isEqualTo("member1");
         assertThat(result.getAge()).isEqualTo(10);
+    }
+
+    @Test
+    void resultFetch() {
+        List<Member> fetch = queryFactory
+                .selectFrom(member)
+                .fetch();
+
+        Member fetchOne = queryFactory
+                .selectFrom(member)
+                .fetchOne();
+
+        Member fetchFirst = queryFactory
+                .selectFrom(member)
+                .fetchFirst();
+        System.out.println("fetchFirst = " + fetchFirst);
     }
 }
