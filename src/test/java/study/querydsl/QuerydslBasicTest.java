@@ -12,6 +12,7 @@ import study.querydsl.entity.QMember;
 import study.querydsl.entity.Team;
 
 import static org.assertj.core.api.Assertions.*;
+import static study.querydsl.entity.QMember.*;
 
 @Transactional
 @SpringBootTest
@@ -24,6 +25,7 @@ class QuerydslBasicTest {
 
     @BeforeEach
     void setUp() {
+        queryFactory = new JPAQueryFactory(em);
         Team teamA = new Team("teamA");
         Team teamB = new Team("teamB");
         em.persist(teamA);
@@ -50,12 +52,22 @@ class QuerydslBasicTest {
 
     @Test
     void startQuerydsl() {
-        queryFactory = new JPAQueryFactory(em);
         QMember m = new QMember("m");
         Member result = queryFactory
                 .select(m)
                 .from(m)
                 .where(m.username.eq("member1"))
+                .fetchOne();
+
+        assertThat(result.getUsername()).isEqualTo("member1");
+    }
+
+    @Test
+    void startQuerydslStatic() {
+        Member result = queryFactory
+                .select(member)
+                .from(member)
+                .where(member.username.eq("member1"))
                 .fetchOne();
 
         assertThat(result.getUsername()).isEqualTo("member1");
