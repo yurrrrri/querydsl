@@ -578,4 +578,41 @@ class QuerydslBasicTest {
     private Predicate ageEq(Integer ageCond) {
         return ageCond == null ? null : member.age.eq(ageCond);
     }
+
+    // 벌크 연산은 DB에 바로 적용, 영속성 컨텍스트와 데이터가 달라짐에 주의
+    @Test
+    void bulkUpdate() {
+        queryFactory
+                .update(member)
+                .set(member.username, "비회원")
+                .where(member.age.lt(28))
+                .execute();
+
+        em.flush();
+        em.clear(); // 영속성 컨텍스트 초기화
+
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .fetch();
+
+        for (Member member1 : result) {
+            System.out.println("member1 = " + member1);
+        }
+    }
+
+    @Test
+    void bulkAdd() {
+        queryFactory
+                .update(member)
+                .set(member.age, member.age.add(1))
+                .execute();
+    }
+
+    @Test
+    void bulkDelete() {
+        queryFactory
+                .delete(member)
+                .where(member.age.gt(18))
+                .execute();
+    }
 }
